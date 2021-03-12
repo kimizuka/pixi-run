@@ -82,7 +82,7 @@ export default class Bg extends TimeController {
     });
   }
 
-  tick(current: number) {
+  tick(current) {
     if (!this.isPlay) {
       return;
     }
@@ -92,6 +92,14 @@ export default class Bg extends TimeController {
     if (1 <= this.progress) {
       this.progress %= 1;
     }
+
+    this.layers.forEach((layer) => {
+      layer.tick(this.progress);
+    });
+  }
+
+  seek(progress) {
+    this.progress = Number(progress);
 
     this.layers.forEach((layer) => {
       layer.tick(this.progress);

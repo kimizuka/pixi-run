@@ -143,7 +143,7 @@ export default class Player extends EventEmitter {
     this.jumping.jump();
   }
 
-  tick(current: number) {
+  tick(current) {
     this.container.x = this.x + this.diffX;
     this.container.y = this.y - this.jumping.y;
 

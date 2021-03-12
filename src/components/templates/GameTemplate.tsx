@@ -8,7 +8,6 @@ import Player from '../../scripts/Player';
 const Wrapper = styled.div`
   width: 100vw;
   background: #a1741b;
-  cursor: pointer;
   overflow: hidden;
 
   canvas {
@@ -52,7 +51,7 @@ const Wrapper = styled.div`
       font-size: 10px;
     }
 
-    .btn {
+    .close {
       position: absolute;
       right: 0; bottom: 0;
       margin: 8px; padding: 12px;
@@ -67,6 +66,26 @@ const Wrapper = styled.div`
       visibility: visible;
       opacity: 1;
       transform: scale(1);
+    }
+  }
+
+  .btn {
+    position: fixed;
+    top: 0; bottom: 44px;
+    left: 0; right: 0;
+  }
+
+  .range {
+    display: flex;
+    align-item: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 44px;
+
+    input {
+      width: 300px;
     }
   }
 `;
@@ -97,8 +116,8 @@ export default function GameTemplate() {
       }));
     } else {
       app.loader.reset()
-                .add('bg1', '/bg/1.png')
-                .add('bg2', '/bg/2.png')
+                .add('bg1', getPath('/bg/1.png'))
+                .add('bg2', getPath('/bg/2.png'))
                 .load((loader, resources) => {
                   setResources(resources);
                 });
@@ -168,6 +187,12 @@ export default function GameTemplate() {
     init();
   }, [player]);
 
+  function getPath(path) {
+    const dir = process.env.NODE_ENV === 'production' ? '/pixi-run' : '';
+
+    return `${ dir }${ path }`;
+  }
+
   function init() {
     setGlobalEvent();
     setStage();
@@ -186,15 +211,12 @@ export default function GameTemplate() {
 
     window.removeEventListener('keypress', handleKeyPress);
     window.addEventListener('keypress', handleKeyPress);
+  }
 
-    document.body.addEventListener('click', () => {
+  function handleClickBtn() {
       handleKeyPress({
         key: ' '
       });
-    });
-    document.body.addEventListener('touchstart', () => {
-      document.body.dispatchEvent(new Event('click'));
-    });
   }
 
   function handleResize() {
@@ -202,10 +224,12 @@ export default function GameTemplate() {
       return;
     }
 
+    const uiHeight = 44;
+
     bg.setSize(window.innerWidth, window.innerHeight);
-    bg.setBottom(window.innerHeight);
-    items.setTop(window.innerHeight - player.jumping.height - player.height);
-    player.setPosition(window.innerWidth / 4, window.innerHeight);
+    bg.setBottom(window.innerHeight - uiHeight);
+    items.setTop(window.innerHeight - player.jumping.height - player.height - uiHeight);
+    player.setPosition(window.innerWidth / 4, window.innerHeight - uiHeight);
 
     app.renderer.resize(window.innerWidth, window.innerHeight);
   }
@@ -277,18 +301,18 @@ export default function GameTemplate() {
     items.getHitItem().forEach((item) => {
       const { x, y } = item;
 
-      debug.lineStyle(1, 0x00FF00)
-           .drawRect(
-             playerHitList.x.min,
-             playerHitList.y.min,
-             playerHitList.x.max - playerHitList.x.min,
-             playerHitList.y.max - playerHitList.y.min
-           ).drawRect(
-             x.min,
-             y.min,
-             x.max - x.min,
-             y.max - y.min
-           );
+      // debug.lineStyle(1, 0x00FF00)
+      //      .drawRect(
+      //        playerHitList.x.min,
+      //        playerHitList.y.min,
+      //        playerHitList.x.max - playerHitList.x.min,
+      //        playerHitList.y.max - playerHitList.y.min
+      //      ).drawRect(
+      //        x.min,
+      //        y.min,
+      //        x.max - x.min,
+      //        y.max - y.min
+      //      );
 
       if (y.min <= playerHitList.y.max && playerHitList.y.min <= y.max) {
         if (x.min <= playerHitList.x.max && playerHitList.x.min <= x.max) {
@@ -296,6 +320,12 @@ export default function GameTemplate() {
         }
       }
     });
+  }
+
+  function handleChangeRange(evt) {
+    pause();
+    bg.seek(evt.target.value);
+    items.seek(evt.target.value);
   }
 
   return (
@@ -312,7 +342,18 @@ export default function GameTemplate() {
         <div className="box">
           <p className="ttl">Ya-Ha-!</p>
         </div>
-        <div className="btn">CLOSE</div>
+        <div className="close">CLOSE</div>
+      </div>
+      <div className="btn" onClick={ handleClickBtn } />
+      <div className="range">
+        <input
+          value={ bg ? bg.progress : 0 }
+          onChange={ handleChangeRange }
+          type="range"
+          min="0"
+          max="1"
+          step=".01"
+        />
       </div>
     </Wrapper>
   );

@@ -30,7 +30,7 @@ class Item {
     this.sprite.width = width;
   }
 
-  tick(progress: number) {
+  tick(progress) {
     console.log(progress);
   }
 }
@@ -51,7 +51,7 @@ export default class Items extends TimeController {
 
     for (let i = 0; i < length; ++i) {
       this.list.push(new Item({
-        x: window.innerWidth * 3,
+        x: window.innerWidth * 2,
         y: 100,
         size: 40
       }));
@@ -87,7 +87,7 @@ export default class Items extends TimeController {
     return this.hitList;
   }
 
-  tick(current: number) {
+  tick(current) {
     if (!this.isPlay) {
       return;
     }
@@ -97,6 +97,12 @@ export default class Items extends TimeController {
     if (1 <= this.progress) {
       this.progress %= 1;
     }
+
+    this.container.x = -this.width * this.progress;
+  }
+
+  seek(progress) {
+    this.progress = Number(progress);
 
     this.container.x = -this.width * this.progress;
   }
