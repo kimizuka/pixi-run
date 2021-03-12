@@ -50,7 +50,7 @@ class Jumping extends TimeController {
     }
 
     this.progress = Math.min(1, this.pauseProgress + (current - this.startTime) / this.duration);
-    this.y = this.height * Math.sin(this.progress * Math.PI);
+    this.y = this.height * Math.min(1, Math.sin(this.progress * Math.PI) * 1.01);
 
     if (1 <= this.progress) {
       this.reset();
@@ -62,27 +62,35 @@ class Jumping extends TimeController {
 
 export default class Player extends EventEmitter {
   container = new PIXI.Container();
-  width = 54;
-  height = 96;
+  sprite;
+  width = 0;
+  height = 0;
   x = 0;
   y = 0;
   canHit = false;
   diffX = 0;
   isPlay = false;
   running = new Running;
-  jumping = new Jumping(200, 1000);
+  jumping = new Jumping(200, 800);
 
-  constructor() {
+  constructor({ texture, width, height }) {
     super();
-    const graphics = new PIXI.Graphics();
 
-    graphics.beginFill(0xFF0000);
-      graphics.drawRect(0, 0, this.width, this.height);
-    graphics.endFill();
+    this.width = width;
+    this.height = height;
+    this.sprite = new PIXI.Sprite(texture.texture);
+
+    // const graphics = new PIXI.Graphics();
+
+    // graphics.beginFill(0xFF0000);
+    //   graphics.drawRect(0, 0, this.width, this.height);
+    // graphics.endFill();
+    // this.container.addChild(graphics);
 
     this.container.pivot.x = this.width / 2;
     this.container.pivot.y = this.height;
-    this.container.addChild(graphics);
+
+    this.container.addChild(this.sprite);
 
     this.jumping.on('jumpstart', () => {
       this.canHit = true;

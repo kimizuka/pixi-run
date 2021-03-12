@@ -118,6 +118,10 @@ export default function GameTemplate() {
       app.loader.reset()
                 .add('bg1', getPath('/bg/1.png'))
                 .add('bg2', getPath('/bg/2.png'))
+                .add('bg3', getPath('/bg/3.png'))
+                .add('bg4', getPath('/bg/4.png'))
+                .add('item1', getPath('/item/1.png'))
+                .add('player', getPath('/player.png'))
                 .load((loader, resources) => {
                   setResources(resources);
                 });
@@ -138,13 +142,21 @@ export default function GameTemplate() {
     }
 
     setBg(new Bg([{
-      texture: resources.bg1,
-      width: 512,
-      height: 384
+      texture: resources.bg4,
+      width: 1200,
+      height: 480
+    }, {
+      texture: resources.bg3,
+      width: 2800,
+      height: 480
     }, {
       texture: resources.bg2,
-      width: 768,
-      height: 256
+      width: 3800,
+      height: 480
+    }, {
+      texture: resources.bg1,
+      width: 4800,
+      height: 480
     }]));
   }, [world]);
 
@@ -153,10 +165,15 @@ export default function GameTemplate() {
       return;
     }
 
-    bg.setDuration(4000);
+    bg.setDuration(30000);
     world.addChild(bg.container);
 
-    setItems(new Items(1));
+    setItems(new Items([{
+      texture: resources.item1,
+      x: window.innerWidth * 2,
+      y: 100,
+      size: 40
+    }]));
   }, [bg]);
 
   useEffect(() => {
@@ -167,7 +184,11 @@ export default function GameTemplate() {
     items.setDuration(4000);
     world.addChild(items.container);
 
-    setPlayer(new Player);
+    setPlayer(new Player({
+      texture: resources.player,
+      width: 120,
+      height: 120
+    }));
   }, [items]);
 
   useEffect(() => {
@@ -340,7 +361,8 @@ export default function GameTemplate() {
         className="popup"
       >
         <div className="box">
-          <p className="ttl">Ya-Ha-!</p>
+          <p className="ttl">ホッカイロ</p>
+          <p className="txt">あったかいぜ</p>
         </div>
         <div className="close">CLOSE</div>
       </div>

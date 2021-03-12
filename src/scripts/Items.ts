@@ -8,18 +8,22 @@ class Item {
   y = 0;
   size = 0;
 
-  constructor({ x, y, size }) {
-    const graphics = new PIXI.Graphics();
-
+  constructor({ texture, x, y, size }) {
     this.x = x;
     this.y = y;
     this.size = size;
+    this.sprite = new PIXI.Sprite(texture.texture);
+    this.sprite.x = x;
+    this.sprite.y = y;
 
-    graphics.beginFill(0x0000FF);
-      graphics.drawRect(this.x, this.y, this.size, this.size);
-    graphics.endFill();
+    // const graphics = new PIXI.Graphics();
 
-    this.container.addChild(graphics);
+    // graphics.beginFill(0x0000FF);
+    //   graphics.drawRect(this.x, this.y, this.size, this.size);
+    // graphics.endFill();
+
+    // this.container.addChild(graphics);
+    this.container.addChild(this.sprite);
   }
 
   setBottom(y) {
@@ -45,16 +49,18 @@ export default class Items extends TimeController {
   width = window.innerWidth * 3;
   y = 0;
 
-  constructor(length) {
+  constructor(items) {
     super();
-    this.length = length;
+    this.length = items.length;
 
-    for (let i = 0; i < length; ++i) {
+    for (let i = 0; i < this.length; ++i) {
       this.list.push(new Item({
-        x: window.innerWidth * 2,
-        y: 100,
-        size: 40
+        texture: items[i].texture,
+        x: items[i].x,
+        y: items[i].y,
+        size: items[i].size
       }));
+
       this.container.addChild(this.list[i].container);
     }
 
